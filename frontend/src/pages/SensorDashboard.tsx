@@ -8,7 +8,7 @@ const SensorDashboard = () => {
   const [vibrationData, setVibrationData] = useState([]);
   const [temperature, setTemperature] = useState<(number | null)[]>(Array(1).fill(null));
   const [vibration, setVibration] = useState<(number | null)[]>(Array(2).fill(null));
-  const backendUrl = "";
+  const backendUrl = "https://unozawa-sdsensor-backend.onrender.com";
   const deviceID = "unozawa";
 
   useEffect(() => {
