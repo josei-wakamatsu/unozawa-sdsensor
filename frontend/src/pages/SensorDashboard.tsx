@@ -7,7 +7,7 @@ const SensorDashboard = () => {
   const [temperatureData, setTemperatureData] = useState([]);
   const [vibrationData, setVibrationData] = useState([]);
   const [temperature, setTemperature] = useState<(number | null)[]>(Array(1).fill(null));
-  const [vibration, setVibration] = useState<(number | null)[]>(Array(2).fill(null));
+  const [vibration, setVibration] = useState<(number | null)[]>(Array(3).fill(null));
   const backendUrl = "https://unozawa-sdsensor-backend.onrender.com";
   const deviceID = "unozawa";
 
@@ -20,9 +20,9 @@ const SensorDashboard = () => {
         if (latestData) {
           const timestamp = new Date().toLocaleTimeString();
           setTemperatureData(prevData => [...prevData.slice(-11), { time: timestamp, temp1: latestData.tempC[0] }]);
-          setVibrationData(prevData => [...prevData.slice(-11), { time: timestamp, vib1: latestData.vReal[0], vib2: latestData.vReal[1] }]);
+          setVibrationData(prevData => [...prevData.slice(-11), { time: timestamp, vib1: latestData.vReal[0], vib2: latestData.vReal[1], vib3: latestData.vReal[2] }]);
           setTemperature([latestData.tempC[0]]);
-          setVibration([latestData.vReal[0], latestData.vReal[1]]);
+          setVibration([latestData.vReal[0], latestData.vReal[1], latestData.vReal[2]]);
         }
       } catch (error) {
         console.error("データ取得に失敗しました:", error);
@@ -46,15 +46,11 @@ const SensorDashboard = () => {
           {/* 温度センサ データ表示 */}
           <div className="bg-white rounded-md shadow p-4">
             <h2 className="text-lg font-semibold text-[#868DAA] text-center mb-4">温度センサ</h2>
-            <div className="flex flex-row justify-center gap-4">
-              {temperature.map((temp, index) => (
-                <div key={index} className="text-center w-1/4 border border-gray-200 rounded-md p-4">
-                  <p className="text-[#868DAA]">温度センサ {index + 1}</p>
-                  <p className="text-lg font-bold text-gray-900">
-                    {temp !== null ? `${temp} °C` : "データなし"}
-                  </p>
-                </div>
-              ))}
+            <div className="text-center w-full border border-gray-200 rounded-md p-4">
+              <p className="text-[#868DAA]">温度センサ 1</p>
+              <p className="text-lg font-bold text-gray-900">
+                {temperature[0] !== null ? `${temperature[0]} °C` : "データなし"}
+              </p>
             </div>
           </div>
 
@@ -71,6 +67,38 @@ const SensorDashboard = () => {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* 温度センサ グラフ */}
+          <div className="bg-white rounded-md shadow p-4">
+            <h2 className="text-lg font-semibold text-[#868DAA] text-center mb-4">温度センサ (リアルタイム)</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={temperatureData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="temp1" stroke="#FF0000" name="温度センサ1" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* 振動センサ グラフ */}
+          <div className="bg-white rounded-md shadow p-4">
+            <h2 className="text-lg font-semibold text-[#868DAA] text-center mb-4">振動センサ (リアルタイム)</h2>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={vibrationData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="time" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="vib1" stroke="#FFA500" name="振動センサ1" />
+                <Line type="monotone" dataKey="vib2" stroke="#008000" name="振動センサ2" />
+                <Line type="monotone" dataKey="vib3" stroke="#0000FF" name="振動センサ3" />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
         <p className="text-[#8091A3] pt-10 text-sm">© 2006-2025 株式会社 ショウワ 無断転載禁止。</p>
